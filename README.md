@@ -60,7 +60,7 @@ cp ./ssh-bastion ~/.ssh/config
 5. Start the ssh agent and add your ssh keypair to the keychain
 ```
 eval `ssh-agent`
-ssh-add -K <your-ssh-keypair-name>.pem
+ssh-add -K <path-to-your-ssh-keypair>.pem
 ```
 6. Now we're ready to run the playbook! It should take around 10 minutes for the cluster to become ready.
 ```
