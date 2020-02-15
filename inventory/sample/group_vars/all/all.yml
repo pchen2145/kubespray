@@ -53,7 +53,7 @@ loadbalancer_apiserver_healthcheck_port: 8081
 ## like you would do when using openstack-client before starting the playbook.
 ## Note: The 'external' cloud provider is not supported.
 ## TODO(riverzhang): https://kubernetes.io/docs/tasks/administer-cluster/running-cloud-controller/#running-cloud-controller-manager
-# cloud_provider:
+cloud_provider: 'aws'
 
 ## Set these proxy values in order to update package manager and docker daemon to use proxies
 # http_proxy: ""

@@ -1,0 +1,33 @@
+[all]
+kubernetes-devtest-master0 ansible_host=10.250.198.36
+kubernetes-devtest-worker0 ansible_host=10.250.201.25
+kubernetes-devtest-worker1 ansible_host=10.250.221.242
+kubernetes-devtest-etcd0 ansible_host=10.250.193.159
+bastion ansible_host=35.175.196.198
+bastion ansible_host=54.83.191.239
+
+[bastion]
+bastion ansible_host=35.175.196.198
+bastion ansible_host=54.83.191.239
+
+[kube-master]
+kubernetes-devtest-master0
+
+
+[kube-node]
+kubernetes-devtest-worker0
+kubernetes-devtest-worker1
+
+
+[etcd]
+kubernetes-devtest-etcd0
+
+
+[k8s-cluster:children]
+kube-node
+kube-master
+
+
+[k8s-cluster:vars]
+apiserver_loadbalancer_domain_name="kubernetes-elb-devtest-871311844.us-east-1.elb.amazonaws.com"
+
