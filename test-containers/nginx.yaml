@@ -1,0 +1,22 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx 
+  labels:
+    app: nginx
+spec:
+  containers:
+    - name: nginx
+      image: nginx 
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - port: 80 
