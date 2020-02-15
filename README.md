@@ -37,13 +37,13 @@ terraform apply
 ![terraform-output](./images/terraform-output.jpg)
 
 ## Part 2: Running Ansible Playbooks to Configure Cluster Nodes and Install Kubernetes 
-1. A hosts file should have been generated at the path inventory/hosts. Copy this file into the inventory/mycluster/ directory. 
+1. Copy the sample inventory directory. A hosts file should have been generated at the path inventory/hosts. Copy this file into the inventory/mycluster/ directory. 
 ```
 cp ../../..
 cp -rfp inventory/sample inventory/mycluster
 cp inventory/hosts inventory/mycluster/hosts
 ```
-2. Modify the hostnames of the entries in the hosts file to match the AWS private DNS names of the cluster nodes. These values will be used by the playbooks to identify and find the cluster nodes.
+2. Modify the hostnames of the entries in the hosts file to match the AWS private DNS names of the cluster nodes. These values will be used by the playbooks to identify and find the cluster nodes. One thing to note is that if you do not plan to run etcd on a separate node (depending on your configuration in the terraform.tfvars), you must create an entry under [etcd] and add the private DNS name of the master node to host etcd on the master. If you do not do this step, your cluster will fail.
 ```
 vi inventory/mycluster/hosts
 ```
