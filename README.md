@@ -62,7 +62,7 @@ ssh-add -K <your-ssh-keypair-name>.pem
 ```
 6. Now we're ready to run the playbook! It should take around 10 minutes for the cluster to become ready.
 ```
-ansible-playbook -i inventory/mycluster/hosts.yaml ./cluster.yml -e ansible_user=ubuntu -b --become-user=root --flush-cache
+ansible-playbook -i inventory/mycluster/hosts ./cluster.yml -e ansible_user=ubuntu -b --become-user=root --flush-cache
 ```
 
 ## Part 3: Finalizing Cluster Setup
