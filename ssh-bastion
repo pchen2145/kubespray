@@ -1,0 +1,11 @@
+
+
+Host 35.174.17.37
+  Hostname 35.174.17.37
+  StrictHostKeyChecking no
+  ControlMaster auto
+  ControlPath ~/.ssh/ansible-%r@%h:%p
+  ControlPersist 5m
+
+Host  10.250.197.27 10.250.207.205
+  ProxyCommand ssh -F /dev/null -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p ubuntu@35.174.17.37 
