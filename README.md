@@ -49,13 +49,13 @@ vi inventory/mycluster/hosts
 ```
 ![hosts-file](./images/hosts-file.jpg)
 
-3. Edit the values of ssh-config and replace the following yellow fields with your bastion IP address. Replace the green fields with the IPs of your cluster nodes (master, worker, etcd).
+3. Edit the values of ssh-bastion and replace the following yellow fields with your bastion IP address. Replace the green fields with the IPs of your cluster nodes (master, worker, etcd).
 
 ![ssh-config](./images/ssh-config.jpg)
 
-4. Copy or add the contents of the ssh-config file to your ~/.ssh/config file. This will allow for ssh key forwarding through the bastion into the private cluster nodes.
+4. Copy or add the contents of the ssh-bastion file to your ~/.ssh/config file. This will allow for ssh key forwarding through the bastion into the private cluster nodes.
 ```
-cp ./ssh-config ~/.ssh/config
+cp ./ssh-bastion ~/.ssh/config
 ```
 5. Start the ssh agent and add your ssh keypair to the keychain
 ```
