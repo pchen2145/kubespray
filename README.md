@@ -99,7 +99,41 @@ kubectl get svcs
 
 ![load-balancer](./images/load-balancer.jpg)
 
-4. Create an ingress definition and replace the host field value with the DNS name of your newly provisioned load balancer. **Optional: If you own a domain name, you could create an alias A record pointing to the load balancer DNS name, and instead use your own domain as the value of the host field.**
+4. Create an ingress definition yaml file with the following contents below and replace the host field value with the DNS name of your newly provisioned load balancer. Apply the file afterwards.  **Optional: If you own a domain name, you could create an alias A record pointing to the load balancer DNS name, and instead use your own domain as the value of the host field.**
+```
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: external-elb-5a6a9f66c4a55332.elb.us-east-1.amazonaws.com 
+    http:
+      paths:
+      - path: 
+        backend:
+          serviceName: nginx-service 
+          servicePort: 80
+      - path: /nginx 
+        backend:
+          serviceName: nginx-service 
+          servicePort: 80
+      - path: /apple
+        backend:
+          serviceName: apple-service 
+          servicePort: 5678 
+      - path: /banana
+        backend:
+          serviceName: banana-service 
+          servicePort: 5678
+```
+```
+kubectl apply -f ingress.yaml
+```
 
 ![ingress-definition](./images/ingress-definition.jpg)
 
