@@ -39,11 +39,11 @@ terraform apply
 ## Part 2: Running Ansible Playbooks to Configure Cluster Nodes and Install Kubernetes 
 1. A hosts file should have been generated at the path inventory/hosts. Copy this file into the inventory/mycluster/ directory. 
 ```
-cp inventory/hosts inventory/mycluster/hosts.yaml
+cp inventory/hosts inventory/mycluster/hosts
 ```
-2. Modify the hostnames of the entries in the hosts file to match the AWS private DNS names of the cluster nodes. These values will be used by the playbooks to find the cluster nodes, as they are unreachable via private IP address.
+2. Modify the hostnames of the entries in the hosts file to match the AWS private DNS names of the cluster nodes. These values will be used by the playbooks to identify and find the cluster nodes.
 ```
-vi inventory/mycluster/hosts.yaml
+vi inventory/mycluster/hosts
 ```
 ![hosts-file](./images/hosts-file.jpg)
 
@@ -111,7 +111,9 @@ http://external-elb-5a6a9f66c4a55332.elb.us-east-1.amazonaws.com/apple
 http://external-elb-5a6a9f66c4a55332.elb.us-east-1.amazonaws.com/banana
 ```
 ![nginx-verify](./images/nginx-verify.jpg)
+
 ![apple-verify](./images/apple-verify.jpg)
+
 ![banana-verify](./images/banana-verify.jpg)
 
 ## Part 5: Future Improvements
