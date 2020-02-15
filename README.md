@@ -30,11 +30,11 @@ terraform init
 ```
 terraform apply
 ```
-![terraform-prompt](./terraform-prompt.jpg)
+![terraform-prompt](./images/terraform-prompt.jpg)
 
 6. Once Terraform has successfully created the infrastructure, you should see an output containing some valuable information about the resources you've created
 
-![terraform-output](./terraform-output.jpg)
+![terraform-output](./images/terraform-output.jpg)
 
 ## Part 2: Running Ansible Playbooks to Configure Cluster Nodes and Install Kubernetes 
 1. A hosts file should have been generated at the path inventory/hosts. Copy this file into the inventory/mycluster/ directory. 
@@ -45,11 +45,11 @@ cp inventory/hosts inventory/mycluster/hosts.yaml
 ```
 vi inventory/mycluster/hosts.yaml
 ```
-![hosts-file](./hosts-file.jpg)
+![hosts-file](./images/hosts-file.jpg)
 
 3. Edit the values of ssh-bastion.conf and replace the following yellow fields with your bastion IP address. Replace the green fields with the IPs of your cluster nodes (master, worker, etcd).
 
-![ssh-config](./ssh-config.jpg)
+![ssh-config](./images/ssh-config.jpg)
 
 4. Copy or add the contents of the ssh-bastion.conf file to your ~/.ssh/config file. This will allow for ssh key forwarding through the bastion into the private cluster nodes.
 ```
@@ -78,7 +78,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 kubectl get nodes
 ```
 
-![kubectl-get-nodes](./kubectl-get-nodes.jpg)
+![kubectl-get-nodes](./images/kubectl-get-nodes.jpg)
 
 ## Part 4: Deploying Containers And Exposing Via Ingress
 1. Apply the following files to create some simple pods and services (hashicorp echo and nginx images)
@@ -93,15 +93,15 @@ kubectl get pods
 kubectl get svcs
 ```
 
-![kubectl-get-pods-svcs](./kubectl-get-pods-svcs.jpg)
+![kubectl-get-pods-svcs](./images/kubectl-get-pods-svcs.jpg)
 
 3. Great! All that's left to do is expose these to the outside world by manually creating a load balancer in AWS and then defining ingress rules and applying them to your cluster. Navigate to the AWS console and create a Network Load Balancer (layer 4) that is located in a public subnet. Create a target group that points to all your cluster nodes running ingress-nginx-controller pods. Copy the public DNS of this load balancer, as you will need to refer to it when creating your ingress object.
 
-![load-balancer](./load-balancer.jpg)
+![load-balancer](./images/load-balancer.jpg)
 
 4. Create an ingress definition and replace the host field value with the DNS name of your newly provisioned load balancer. **Optional: If you own a domain name, you could create an alias A record pointing to the load balancer DNS name, and instead use your own domain as the value of the host field.**
 
-![ingress-definition](./ingress-definition.jpg)
+![ingress-definition](./images/ingress-definition.jpg)
 
 5. Verify it all works by visiting your hostname and appending the various paths!
 ```
@@ -110,9 +110,9 @@ http://external-elb-5a6a9f66c4a55332.elb.us-east-1.amazonaws.com/nginx
 http://external-elb-5a6a9f66c4a55332.elb.us-east-1.amazonaws.com/apple
 http://external-elb-5a6a9f66c4a55332.elb.us-east-1.amazonaws.com/banana
 ```
-![nginx-verify](./nginx-verify.jpg)
-![apple-verify](./apple-verify.jpg)
-![banana-verify](./banana-verify.jpg)
+![nginx-verify](./images/nginx-verify.jpg)
+![apple-verify](./images/apple-verify.jpg)
+![banana-verify](./images/banana-verify.jpg)
 
 ## Part 5: Future Improvements
 - Adding TLS between the load balancer and the ingress-controller.
