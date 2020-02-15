@@ -60,8 +60,63 @@ cp ./ssh-bastion.conf ~/.ssh/config
 eval `ssh-agent`
 ssh-add -K <your-ssh-keypair-name>.pem
 ```
-6. Now we're ready to run the playbook! It should take around 10 minutes for the playbook to completely run.
+6. Now we're ready to run the playbook! It should take around 10 minutes for the cluster to become ready.
 ```
 ansible-playbook -i inventory/mycluster/hosts.yaml ./cluster.yml -e ansible_user=ubuntu -b --become-user=root --flush-cache
 ```
 
+## Part 3: Finalizing Cluster Setup
+1. Ssh into the master node and run the following commands to create the .kube directory and copy over the default generated ./kube/config file
+```
+ssh ubuntu@<master-node-ip>
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+2. Verify your cluster. You should be able to see that your nodes are up and accounted for.
+```
+kubectl get nodes
+```
+
+![kubectl-get-nodes](./kubectl-get-nodes.jpg)
+
+## Part 4: Deploying Containers And Exposing Via Ingress
+1. Apply the following files to create some simple pods and services (hashicorp echo and nginx images)
+```
+kubectl apply -f https://github.com/pchen2145/kubespray/test-containers/apple.yaml
+kubectl apply -f https://github.com/pchen2145/kubespray/test-containers/banana.yaml
+kubectl apply -f https://github.com/pchen2145/kubespray/test-containers/nginx.yaml
+```
+2. Verify the pods and services are running
+```
+kubectl get pods
+kubectl get svcs
+```
+
+![kubectl-get-pods-svcs](./kubectl-get-pods-svcs.jpg)
+
+3. Great! All that's left to do is expose these to the outside world by manually creating a load balancer in AWS and then defining ingress rules and applying them to your cluster. Navigate to the AWS console and create a Network Load Balancer (layer 4) that is located in a public subnet. Create a target group that points to all your cluster nodes running ingress-nginx-controller pods. Copy the public DNS of this load balancer, as you will need to refer to it when creating your ingress object.
+
+![load-balancer](./load-balancer.jpg)
+
+4. Create an ingress definition and replace the host field value with the DNS name of your newly provisioned load balancer. **Optional: If you own a domain name, you could create an alias A record pointing to the load balancer DNS name, and instead use your own domain as the value of the host field.**
+
+![ingress-definition](./ingress-definition.jpg)
+
+5. Verify it all works by visiting your hostname and appending the various paths!
+```
+http://external-elb-5a6a9f66c4a55332.elb.us-east-1.amazonaws.com/
+http://external-elb-5a6a9f66c4a55332.elb.us-east-1.amazonaws.com/nginx
+http://external-elb-5a6a9f66c4a55332.elb.us-east-1.amazonaws.com/apple
+http://external-elb-5a6a9f66c4a55332.elb.us-east-1.amazonaws.com/banana
+```
+![nginx-verify](./nginx-verify.jpg)
+![apple-verify](./apple-verify.jpg)
+![banana-verify](./banana-verify.jpg)
+
+## Part 5: Future Improvements
+- Adding TLS between the load balancer and the ingress-controller.
+- Experimenting with using other types of load balancers such as EC2 classic.
+- Doing additional use case write ups for deploying production ready Kubernetes onto other CSPs such as GCE and Azure.
+
+Thanks for reading!
