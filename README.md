@@ -32,7 +32,7 @@ terraform apply
 ```
 ![terraform-prompt](./images/terraform-prompt.jpg)
 
-6. Once Terraform has successfully created the infrastructure, you should see an output containing some valuable information about the resources you've created
+6. Once Terraform has successfully created your infrastructure, you should see an output containing some valuable information about the resources you've created
 
 ![terraform-output](./images/terraform-output.jpg)
 
@@ -98,6 +98,8 @@ kubectl get svcs
 ![kubectl-get-pods-svcs](./images/kubectl-get-pods-svcs.jpg)
 
 3. All that's left to do is expose the services to the outside world by creating a load balancer in AWS. Navigate to the AWS console and create a Network Load Balancer (layer 4) that is located in a public subnet. Create a target group that points to all your cluster nodes in your private subnets running ingress-nginx-controller pods. One last thing to do is create a new security group allowing inbound TCP traffic on port 80 and attach it to the cluster instances. This allows the instances to receive traffic from the NLB.
+
+![security-group](./images/security-group.jpg)
 
 Copy the public DNS of this load balancer, as you will need to refer to it when creating your ingress object.
 
