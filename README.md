@@ -97,11 +97,11 @@ kubectl get svcs
 
 ![kubectl-get-pods-svcs](./images/kubectl-get-pods-svcs.jpg)
 
-3. All that's left to do is expose the services to the outside world by creating a load balancer in AWS. Navigate to the AWS console and create a Network Load Balancer (layer 4) that is located in a public subnet. Create a target group that points to all your cluster nodes in your private subnets running ingress-nginx-controller pods. One last thing to do is create a new security group allowing inbound TCP traffic on port 80 and attach it to the cluster instances. This allows the instances to receive traffic from the NLB.
+3. All that's left to do is expose the services to the outside world by creating a load balancer in AWS. Navigate to the AWS console and create a Network Load Balancer (layer 4) that is located in a public subnet. Create a target group that points to all your cluster nodes in your private subnets running ingress-nginx-controller pods. One last thing to do is create a new security group allowing inbound HTTP traffic on port 80 and attach it to the cluster instances. This allows the instances to receive HTTP traffic from the NLB.
 
 ![security-group](./images/security-group.jpg)
 
-Copy the public DNS of this load balancer, as you will need to refer to it when creating your ingress object.
+Copy the public DNS of the load balancer, as you will need to refer to it when creating your ingress object.
 
 ![load-balancer](./images/load-balancer.jpg)
 
@@ -117,7 +117,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: external-elb-5a6a9f66c4a55332.elb.us-east-1.amazonaws.com 
+  - host: <replace-with-your-load-balancer-dns-name>
     http:
       paths:
       - path: 
