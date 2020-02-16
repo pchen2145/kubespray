@@ -85,9 +85,9 @@ kubectl get nodes
 ## Part 4: Deploying Containers And Exposing Via Ingress
 1. Apply the following files to create some simple pods and services (hashicorp echo and nginx images)
 ```
-kubectl apply -f https://github.com/pchen2145/kubespray/test-containers/apple.yaml
-kubectl apply -f https://github.com/pchen2145/kubespray/test-containers/banana.yaml
-kubectl apply -f https://github.com/pchen2145/kubespray/test-containers/nginx.yaml
+kubectl apply -f https://raw.githubusercontent.com/pchen2145/kubespray/master/test-containers/apple.yaml
+kubectl apply -f https://raw.githubusercontent.com/pchen2145/kubespray/master/test-containers/banana.yaml
+kubectl apply -f https://raw.githubusercontent.com/pchen2145/kubespray/master/test-containers/nginx.yaml
 ```
 2. Verify the pods and services are running
 ```
