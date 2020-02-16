@@ -97,7 +97,7 @@ kubectl get svcs
 
 ![kubectl-get-pods-svcs](./images/kubectl-get-pods-svcs.jpg)
 
-3. All that's left to do is expose the services to the outside world by manually creating a load balancer in AWS. Navigate to the AWS console and create a Network Load Balancer (layer 4) that is located in a public subnet. Create a target group that points to all your cluster nodes in your private subnets running ingress-nginx-controller pods. One last thing to do is create a new security group allowing inbound TCP traffic on port 80 and attach it to the cluster instances. This allows the instances to receive traffic from the NLB.
+3. All that's left to do is expose the services to the outside world by creating a load balancer in AWS. Navigate to the AWS console and create a Network Load Balancer (layer 4) that is located in a public subnet. Create a target group that points to all your cluster nodes in your private subnets running ingress-nginx-controller pods. One last thing to do is create a new security group allowing inbound TCP traffic on port 80 and attach it to the cluster instances. This allows the instances to receive traffic from the NLB.
 
 Copy the public DNS of this load balancer, as you will need to refer to it when creating your ingress object.
 
@@ -105,7 +105,7 @@ Copy the public DNS of this load balancer, as you will need to refer to it when 
 
 4. Create an ingress definition yaml file with the following contents below and replace the host field value with the DNS name of your newly provisioned load balancer. Apply the file afterwards.  **Optional: If you own a domain name, you could create an alias A record pointing to the load balancer DNS name, and instead use your own domain as the value of the host field.**
 ```
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: nginx-ingress
@@ -138,8 +138,6 @@ spec:
 ```
 kubectl apply -f ingress.yaml
 ```
-
-![ingress-definition](./images/ingress-definition.jpg)
 
 5. Verify it all works by visiting your hostname and appending the various paths!
 ```
