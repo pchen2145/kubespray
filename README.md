@@ -2,7 +2,7 @@
 
 ![Kubernetes Logo](https://raw.githubusercontent.com/kubernetes-sigs/kubespray/master/docs/img/kubernetes-logo.png)
 
-This repository was built upon the original kubespray repo which can be found [here](https://github.com/kubernetes-sigs/kubespray). Note that all of the original repository content for deploying onto GCE, Azure, Bare Metal, etc. has been preserved, however I've created this write-up to outline a specific use case for deploying a cluster on AWS and exposing the underlying services to external traffic via ingress. 
+This repository was built upon the original kubespray repo which can be found [here](https://github.com/kubernetes-sigs/kubespray). Note that all of the original repository content has been preserved, however I've created this repository and write-up to outline a specific use case for deploying a cluster on AWS and exposing the cluster to external traffic via ingress.
 
 This repository is meant to be cloned and run from a local machine. The requirements for the local machine are as follows:
 
@@ -20,8 +20,11 @@ This repository is meant to be cloned and run from a local machine. The requirem
 git clone https://github.com/pchen2145/kubespray
 cd kubespray
 ```
-3. Edit the ./contrib/terraform/aws/terraform.tfvars file to your liking. Note that the default values are for an extremely lean cluster (1 master running etcd and 1 worker). You can also change the size of the instances, but be aware that the minimum recommended size for cluster nodes is t2.medium. The cluster in this example is configured to deploy hosts running Ubuntu 16.04.
-4. Change into the terraform aws directory and initialize Terraform plugins
+3. Edit the ./contrib/terraform/aws/terraform.tfvars file to your liking. The default values define a lean cluster containing 1 master running etcd, 1 worker, and 2 bastion hosts.
+
+The size of the instances can be adjusted in this file, but be aware that the minimum recommended size for cluster nodes is t2.medium. The cluster in this example is configured to deploy hosts running Ubuntu 16.04. To change the AMIs, edit the AWS AMI distro variable defined in the variables.tf file.
+
+4. Change into the terraform aws directory and initialize the Terraform plugins
 ```
 cd ./contrib/terraform/aws/
 terraform init
@@ -36,14 +39,14 @@ terraform apply
 
 ![terraform-output](./images/terraform-output.jpg)
 
-## Part 2: Running Ansible Playbooks to Configure Cluster Nodes and Install Kubernetes 
+## Part 2: Running Ansible Playbooks to Configure the Cluster Nodes and Install Kubernetes 
 1. Copy the sample inventory directory. A hosts file should have been generated at the path inventory/hosts. Copy this file into the inventory/mycluster/ directory. 
 ```
 cp ../../..
 cp -rfp inventory/sample inventory/mycluster
 cp inventory/hosts inventory/mycluster/hosts
 ```
-2. Modify the hostnames of the entries in the hosts file to match the AWS private DNS names of the cluster nodes. These values will be used by the playbooks to identify and find the cluster nodes. One thing to note is that if you do not plan to run etcd on a separate node (depending on your configuration in the terraform.tfvars), you must create an entry under [etcd] and add the private DNS name of the master node to host etcd on the master. If you do not do this step, your cluster will fail.
+2. Modify the hostnames of the entries in the hosts file to match the AWS private DNS names of the cluster nodes. These hostnames will be used by the playbooks to identify and find the cluster nodes. One thing to note is that if you do not plan to run etcd on a separate node (depending on your configuration in the terraform.tfvars), you must create an entry under [etcd] and add the private DNS name of the master node to host etcd on the master.
 ```
 vi inventory/mycluster/hosts
 ```
@@ -62,7 +65,7 @@ cp ./ssh-bastion ~/.ssh/config
 eval `ssh-agent`
 ssh-add -K <path-to-your-ssh-keypair>.pem
 ```
-6. Now we're ready to run the playbook! It should take around 10 minutes for the cluster to become ready.
+6. We're ready to run the playbook! It should take around 5-10 minutes for the cluster to become ready.
 ```
 ansible-playbook -i inventory/mycluster/hosts ./cluster.yml -e ansible_user=ubuntu -b --become-user=root --flush-cache
 ```
@@ -82,7 +85,7 @@ kubectl get nodes
 
 ![kubectl-get-nodes](./images/kubectl-get-nodes.jpg)
 
-## Part 4: Deploying Containers And Exposing Via Ingress
+## Part 4: Deploying Containers And Exposing Services Via Ingress
 1. Apply the following files to create some simple pods and services (hashicorp echo and nginx images)
 ```
 kubectl apply -f https://raw.githubusercontent.com/pchen2145/kubespray/master/test-containers/apple.yaml
@@ -97,15 +100,17 @@ kubectl get svcs
 
 ![kubectl-get-pods-svcs](./images/kubectl-get-pods-svcs.jpg)
 
-3. All that's left to do is expose the services to the outside world by creating a load balancer in AWS. Navigate to the AWS console and create a Network Load Balancer (layer 4) that is located in a public subnet. Create a target group that points to all your cluster nodes in your private subnets running ingress-nginx-controller pods. One last thing to do is create a new security group allowing inbound HTTP traffic on port 80 and attach it to the cluster instances. This allows the instances to receive HTTP traffic from the NLB.
+3. All that's left to do is expose the services to the outside world by creating a load balancer in AWS. Navigate to the AWS console and create a Network Load Balancer (layer 4) that is located in a public subnet. Create a target group that points to cluster nodes in your private subnets running ingress-nginx-controller pods. 
+
+The last thing to do is create a new security group allowing inbound HTTP traffic on port 80 and attach it to the cluster instances. This allows the instances to receive HTTP traffic from the NLB.
 
 ![security-group](./images/security-group.jpg)
 
-Copy the public DNS of the load balancer, as you will need to refer to it when creating your ingress object.
+Copy the public DNS of the load balancer as you will need to refer to it when creating your ingress object.
 
 ![load-balancer](./images/load-balancer.jpg)
 
-4. Create an ingress definition yaml file with the following contents below and replace the host field value with the DNS name of your newly provisioned load balancer. Apply the file afterwards.  **Optional: If you own a domain name, you could create an alias A record pointing to the load balancer DNS name, and instead use your own domain as the value of the host field.**
+4. Create an ingress.yaml file with the following contents below and replace the host field value with the DNS name of your newly provisioned load balancer. Apply the file afterwards.  **Optional: If you own a domain name, you could create an alias A record pointing to the load balancer DNS name, and instead use your own domain as the value of the host field.**
 ```
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
