@@ -20,7 +20,7 @@ This repository is meant to be cloned and run from a local machine. The requirem
 git clone https://github.com/pchen2145/kubespray
 cd kubespray
 ```
-3. Edit the ./contrib/terraform/aws/terraform.tfvars file to your liking. The default values define a lean cluster containing 1 master running etcd, 1 worker, and 2 bastion hosts.
+3. Edit the ./contrib/terraform/aws/terraform.tfvars file to your liking. The default values define a lean cluster containing 1 master with etcd, 1 worker, and 2 bastion hosts.
 
 The size of the instances can be adjusted in this file, but be aware that the minimum recommended size for cluster nodes is t2.medium. The cluster in this example is configured to deploy hosts running Ubuntu 16.04. To change the AMIs, edit the AWS AMI distro variable defined in the variables.tf file.
 
